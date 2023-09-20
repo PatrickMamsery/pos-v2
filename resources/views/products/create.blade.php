@@ -14,8 +14,8 @@
             {{-- Selector for category --}}
             <div class="form-group">
                 <label for="category">Category</label>
-                <select name="category_id" id="category"
-                    class="form-control @error('category_id') is-invalid @enderror">
+                <select name="product_category_id" id="category"
+                    class="form-control @error('product_category_id') is-invalid @enderror">
                     <option value="">Select Category</option>
                     @foreach ($categories as $category)
                     <option value="{{ $category->id }}"

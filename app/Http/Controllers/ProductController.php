@@ -8,7 +8,9 @@ use App\Http\Resources\ProductResource;
 use App\Models\Product;
 use App\Models\ProductCategory;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 
 class ProductController extends Controller
 {
@@ -54,7 +56,24 @@ class ProductController extends Controller
      */
     public function store(ProductStoreRequest $request)
     {
-        dd($request->all()); return;
+        // $validator = Validator::make($request->all(), [
+        //     'name' => 'required|string|max:255',
+        //     'product_category_id' => 'required|exists:product_categories,id',
+        //     'image' => 'nullable|image',
+        //     'buying_price' => 'required|regex:/^\d+(\.\d{1,2})?$/',
+        //     'selling_price' => 'required|regex:/^\d+(\.\d{1,2})?$/',
+        //     'unit' => 'required|string',
+        // ]);
+
+        // if ($validator->fails()) {
+        //     // return 'yo';
+        //     Log::error($validator->errors()->all()[0]);
+        //     return redirect()->back()->with('error', $validator->errors()->all()[0]);
+        // }
+
+        if ($request->validate()) {
+            return redirect()->back()->with('error', 'Sorry, there was a problem while creating product.');
+        }
 
         $image_path = '';
 
@@ -65,7 +84,7 @@ class ProductController extends Controller
 
         $product = Product::create([
             'name' => $request->name,
-            'product_category_id' => $request->category_id,
+            'product_category_id' => $request->product_category_id,
             'image' => $image_path,
             'buying_price' => $request->buying_price,
             'selling_price' => $request->selling_price,
@@ -97,7 +116,9 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
-        return view('products.edit')->with('product', $product);
+        $categories  = ProductCategory::all();
+
+        return view('products.edit', ['categories' => $categories])->with('product', $product);
     }
 
     /**
@@ -107,29 +128,42 @@ class ProductController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(ProductUpdateRequest $request, Product $product)
+    public function update(Request $request, Product $product)
     {
+        $validator = Validator::make($request->all(), [
+            'name' => 'nullable|string|max:255',
+            'product_category_id' => 'nullable|exists:product_categories,id',
+            'image' => 'nullable|image',
+            'buying_price' => 'nullable|regex:/^\d+(\.\d{1,2})?$/',
+            'selling_price' => 'nullable|regex:/^\d+(\.\d{1,2})?$/',
+            'unit' => 'nullable|string',
+        ]);
 
-            $image_path = $product->image;
+        if ($validator->fails()) {
+            Log::error($validator->errors()->all()[0]);
+            return redirect()->back()->with('error', $validator->errors()->all()[0]);
+        }
 
-            if ($request->hasFile('image')) {
-                Storage::disk('public')->delete($product->image);
-                $image_path = $request->file('image')->store('products', 'public');
-            }
+        $image_path = $product->image;
 
-            $product->update([
-                'name' => $request->name,
-                'product_category_id' => $request->category_id,
-                'image' => $image_path,
-                'buying_price' => $request->buying_price,
-                'selling_price' => $request->selling_price,
-                'unit' => $request->unit
-            ]);
+        if ($request->hasFile('image')) {
+            Storage::disk('public')->delete($product->image);
+            $image_path = $request->file('image')->store('products', 'public');
+        }
 
-            if (!$product) {
-                return redirect()->back()->with('error', 'Sorry, there was a problem while updating product.');
-            }
-            return redirect()->route('products.index')->with('success', 'Success, your product has been updated.');
+        $product->update([
+            'name' => $request->name,
+            'product_category_id' => $request->product_category_id ?? $product->product_category_id,
+            'image' => $image_path,
+            'buying_price' => $request->buying_price,
+            'selling_price' => $request->selling_price,
+            'unit' => $request->unit
+        ]);
+
+        if (!$product) {
+            return redirect()->back()->with('error', 'Sorry, there was a problem while updating product.');
+        }
+        return redirect()->route('products.index')->with('success', 'Success, your product has been updated.');
     }
 
     /**

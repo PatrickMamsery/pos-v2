@@ -13,6 +13,20 @@
             @method('PUT')
 
             <div class="form-group">
+                <label for="category">Category</label>
+                <select name="product_category_id" id="category"
+                    class="form-control @error('product_category_id') is-invalid @enderror">
+                    <option value="">Select Category</option>
+                    @foreach ($categories as $category)
+                    <option value="{{ $category->id }}"
+                        {{ old('category_id') == $category->id ? 'selected' : '' }}>
+                        {{ $category->name }}
+                    </option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div class="form-group">
                 <label for="name">Name</label>
                 <input type="text" name="name" class="form-control @error('name') is-invalid @enderror" id="name"
                     placeholder="Name" value="{{ old('name', $product->name) }}">
