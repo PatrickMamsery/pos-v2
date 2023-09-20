@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>{{ config('app.name') }}</title>
+    <title>@yield('title', config('app.name'))</title>
     <meta content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css"
@@ -37,7 +37,7 @@
                 <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
                     <!-- User image -->
                     <li class="user-header bg-primary">
-                        <img src="{{ Auth::user()->avatar }}"
+                        <img src="{{ Auth::user()->getAvatar() }}"
                              class="img-circle elevation-2"
                              alt="User Image">
                         <p>
@@ -66,19 +66,27 @@
 
 <!-- Content Wrapper. Contains page content -->
     <div class="content-wrapper">
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1>@yield('content-header')</h1>
+                    </div>
+                    <div class="col-sm-6 text-right">
+                        @yield('content-actions')
+                    </div><!-- /.col -->
+                </div>
+            </div>
+        </section>
+
         <section class="content">
+            @include('layouts.partials.alert.success')
+            @include('layouts.partials.alert.error')
             @yield('content')
         </section>
     </div>
 
-    <!-- Main Footer -->
-    <footer class="main-footer">
-        <div class="float-right d-none d-sm-block">
-            <b>Version</b> 1.0
-        </div>
-        <strong>Copyright &copy; {{ date("Y") }} <a href="https://foundas.co.tz">Foundas Inc</a>.</strong> All rights
-        reserved.
-    </footer>
+    @include('layouts.partials.footer')
 </div>
 
 <script src="{{ mix('js/app.js') }}" defer></script>
