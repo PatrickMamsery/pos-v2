@@ -34,4 +34,8 @@ Route::prefix('admin')->middleware('auth')->group(function () {
     Route::resource('products', ProductController::class);
 
     Route::post('/product/category', [ProductController::class, 'createCategory'])->name('product.category.store');
+
+    Route::get('/purchases', function () {
+        return view('purchases.index');
+    })->name('purchases');
 });

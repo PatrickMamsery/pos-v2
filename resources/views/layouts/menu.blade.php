@@ -25,6 +25,19 @@
         </li>
     </ul>
 </li>
+<!-- purchase -->
+<li class="nav-item {{ activeSegment('purchases') }}">
+    <a href="{{ route('purchases') }}" class="nav-link">
+        <i class="nav-icon fas fa-money-bill"></i>
+        <p>Purchases</p>
+    </a>
+</li>
+<li class="nav-item {{ activeSegment('purchases') }}">
+    <a href="#" class="nav-link">
+        <i class="nav-icon fas fa-cart-plus"></i>
+        <p>Sales (POS)</p>
+    </a>
+</li>
 <li class="nav-item has-treeview">
     <a href="{{ route('settings.index') }}" class="nav-link {{ activeSegment('settings') }}">
         <i class="nav-icon fas fa-cogs"></i>
